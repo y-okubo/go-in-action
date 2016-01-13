@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>Go in Action 輪読会 #05</title>
+
+	<meta name="description" content="Go in Action 輪読会 #05">
+	<meta name="author" content="Yuki Okubo">
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/serif.css" id="theme">
+
+	<!-- Code syntax highlighting -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+
+	<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+</head>
+
+<body>
+
+	<div class="reveal">
+
+		<!-- Any section element inside of this container is displayed as a slide -->
+		<div class="slides">
+			<section data-markdown>
+				<script type="text/template">
+					# Go in Action
+					# 輪読会 #05
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					# Chapter 5
+					## 5.1 ~ 5.3
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					## 5.1 User-defined types
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.1
+					#### Declaration of a struct type
+					```
+					type user struct {
+						name       string
+						email      string
+						ext        int
+						privileged bool
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.2
+					#### Declaration of a variable of the struct type set to its zero value
+					```
+					var bill user
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.3
+					#### Declaration of a variable of the struct type using a struct literal
+					```
+					lisa := user{
+						name:       "Lisa",
+						email:      "lisa@email.com",
+						ext:        123,
+						privileged: true,
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.4
+					#### Creating a struct type value using a struct literal
+					```
+					user{
+					  name:"Lisa",
+					  email:"lisa@email.com",
+					  ext:123,
+					  privileged: true,
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.5
+					#### Creating a struct type value without declaring the field names
+					```
+					lisa := user{"Lisa", "lisa@email.com", 123, true}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.6
+					#### Declaring fields based on other struct types
+					```
+					type admin struct {
+						person user
+						level  string
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.7
+					#### Using struct literals to create values for fields
+					```
+					fred := admin{
+						person: user{
+							name:       "Lisa",
+							email:      "lica@email.com",
+							ext:        123,
+							privileged: true,
+						},
+						level: "super",
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.8
+					#### Declaration of a new type based on an int64
+					```
+					type Duration int64
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.9
+					#### Compiler error assigning value of different types
+					```
+					package main
+
+					type Duration int64
+
+					func main() {
+						var dur Duration
+						dur = int64(1000)
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.10
+					#### Actual compiler error
+					```
+					cannot use int64(1000) (type int64) as type Duration in assignment
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					## 5.2 Methods
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					## The nature of types
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### 5.3.1 Built-in types
+					標準ライブラリから関数を見ていく
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/strings/strings.go
+					```
+					func Trim(s string, cutset string) string {
+						if s == "" || cutset == "" {
+							return s
+						}
+						return TrimFunc(s, makeCutsetFunc(cutset))
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/os/env.go
+					```
+					func isShellSpecialVar(c uint8) bool {
+						switch c {
+						case '*', '#', '$', '@', '!', '?', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+							return true
+						}
+						return false
+					}
+					```
+					値渡しであることがポイント？
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### 5.3.2 Reference types
+					* slice
+					* map
+					* channel
+					* interface
+					* function types
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/net/ip.go
+					```
+					type IP []byte
+					```
+					slice of bytes
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/net/ip.go
+					```
+					func (ip IP) MarshalText() ([]byte, error) {
+						if len(ip) == 0 {
+							return []byte(""), nil
+						}
+						if len(ip) != IPv4len && len(ip) != IPv6len {
+							return nil, &AddrError{Err: "invalid IP address", Addr: ip.String()}
+						}
+						return []byte(ip.String()), nil
+					}
+					```
+					slice of bytes
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/net/ip.go
+					```
+					func ipEmptyString(ip IP) string {
+						if len(ip) == 0 {
+							return ""
+						}
+						return ip.String()
+					}
+					```
+					slice of bytes
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### 5.3.3 Struct types
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/time/time.go
+					```
+					type Time struct {
+						// sec gives the number of seconds elapsed since
+						// January 1, year 1 00:00:00 UTC.
+						sec int64
+
+						// nsec specifies a non-negative nanosecond
+						// offset within the second named by Seconds.
+						// It must be in the range [0, 999999999].
+						nsec int32
+
+						// loc specifies the Location that should be used to
+						// determine the minute, hour, month, day, and year
+						// that correspond to this Time.
+						// Only the zero Time has a nil Location.
+						// In that case it is interpreted to mean UTC.
+						loc *Location
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/time/time.go
+					```
+					func Now() Time {
+						sec, nsec := now()
+						return Time{sec + unixToInternal, nsec, Local}
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/time/time.go
+					```
+					func (t Time) Add(d Duration) Time {
+						t.sec += int64(d / 1e9)
+						nsec := int32(t.nsec) + int32(d%1e9)
+						if nsec >= 1e9 {
+							t.sec++
+							nsec -= 1e9
+						} else if nsec < 0 {
+							t.sec--
+							nsec += 1e9
+						}
+						t.nsec = nsec
+						return t
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/os/file_unix.go
+					```
+					// File represents an open file descriptor.
+					type File struct {
+						*file
+					}
+
+					// file is the real representation of *File.
+					// The extra level of indirection ensures that no clients of os
+					// can overwrite this data, which could cause the finalizer
+					// to close the wrong file descriptor.
+					type file struct {
+						fd      int
+						name    string
+						dirinfo *dirInfo // nil unless directory being read
+						nepipe  int32    // number of consecutive EPIPE in Write
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/os/file.go
+					```
+					func Open(name string) (*File, error) {
+						return OpenFile(name, O_RDONLY, 0)
+					}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### golang.org/src/os/file.go
+					```
+					func (f *File) Chdir() error {
+						if f == nil {
+							return ErrInvalid
+						}
+						if e := syscall.Fchdir(f.fd); e != nil {
+							return &PathError{"chdir", f.name, e}
+						}
+						return nil
+					}
+					```
+				</script>
+			</section>
+		</div>
+
+	</div>
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+
+	<script>
+		// Full list of configuration options available at:
+		// https://github.com/hakimel/reveal.js#configuration
+		Reveal.initialize({
+			controls: true,
+			progress: true,
+			history: true,
+			center: true,
+
+			transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+			// Optional reveal.js plugins
+			dependencies: [{
+				src: 'lib/js/classList.js',
+				condition: function() {
+					return !document.body.classList;
+				}
+			}, {
+				src: 'plugin/markdown/marked.js',
+				condition: function() {
+					return !!document.querySelector('[data-markdown]');
+				}
+			}, {
+				src: 'plugin/markdown/markdown.js',
+				condition: function() {
+					return !!document.querySelector('[data-markdown]');
+				}
+			}, {
+				src: 'plugin/highlight/highlight.js',
+				async: true,
+				callback: function() {
+					hljs.initHighlightingOnLoad();
+				}
+			}, {
+				src: 'plugin/zoom-js/zoom.js',
+				async: true
+			}, {
+				src: 'plugin/notes/notes.js',
+				async: true
+			}]
+		});
+	</script>
+
+</body>
+
+</html>
