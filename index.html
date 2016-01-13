@@ -57,6 +57,7 @@
 			<section data-markdown>
 				<script type="text/template">
 					## 5.1 User-defined types
+					### ユーザ定義型
 				</script>
 			</section>
 
@@ -82,6 +83,7 @@
 					```
 					var bill user
 					```
+					数値型は0、文字列型は空文字、論理値型はfalse
 				</script>
 			</section>
 
@@ -97,6 +99,7 @@
 						privileged: true,
 					}
 					```
+					省略書式で構造体リテラルを使った構造体の初期化
 				</script>
 			</section>
 
@@ -112,6 +115,7 @@
 					  privileged: true,
 					}
 					```
+					フィールドの順序関係なし
 				</script>
 			</section>
 
@@ -122,6 +126,7 @@
 					```
 					lisa := user{"Lisa", "lisa@email.com", 123, true}
 					```
+					フィールドの順序関係あり
 				</script>
 			</section>
 
@@ -180,6 +185,7 @@
 						dur = int64(1000)
 					}
 					```
+					別名を与えたように見えるが型が異なるのでエラーとなる
 				</script>
 			</section>
 
@@ -190,6 +196,7 @@
 					```
 					cannot use int64(1000) (type int64) as type Duration in assignment
 					```
+					コンパイラは暗黙的な型変換をしない
 				</script>
 			</section>
 
@@ -201,20 +208,167 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					## The nature of types
+					### Listing 5.11
+					#### Listing11.go
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.12
+					#### Output for listing11.go
+					```
+					Sending User Email To Bill<bill@email.com>
+					Sending User Email To Lisa<lisa@email.com>
+					Sending User Email To Bill<bill@newdomain.com>
+					Sending User Email To Lisa<lisa@comcast.com>
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.13
+					#### listing11.go: lines 09–20
+					```
+					// user defines a user in the program.
+					type user struct {
+						name  string
+						email string
+					}
+
+					// notify implements a method with a value receiver.
+					func (u user) notify() {
+						fmt.Printf("Sending User Email To %s<%s>\n",
+							u.name,
+							u.email)
+					}
+					```
+					レシーバは値またはポインタが使用できる
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.14
+					#### Declaration of a method with a value receiver
+					```
+					func (u user) notify() {
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.15
+					#### listing11.go: lines 29–32
+					```
+					// Values of type user can be used to call methods
+					// declared with a value receiver.
+					bill := user{"Bill", "bill@email.com"}
+					bill.notify()
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.16
+					#### Calling a method from a variable
+					```
+					bill.notify()
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.17
+					#### listing11.go: lines 34–37
+					```
+					// Pointers of type user can also be used to call methods
+					// declared with a value receiver.
+					lisa := &user{"Lisa", "lisa@email.com"}
+					lisa.notify()
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.18
+					#### What Go is doing underneath the code
+					```
+					(*lisa).notify()
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.19
+					#### listing11.go: lines 22–25
+					```
+					// changeEmail implements a method with a pointer receiver.
+					func (u *user) changeEmail(email string) {
+						u.email = email
+					}
+					```
+					レシーバをポインタにするとメソッド内でレシーバの値を変更できる
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.20
+					#### listing11.go: lines 36, 44–46
+					```
+					lisa := &user{"Lisa", "lisa@email.com"}
+
+					// Pointers of type user can be used to call methods
+					// declared with a pointer receiver.
+					lisa.changeEmail("lisa@newdomain.com")
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.21
+					#### listing11.go: line 31
+					```
+					bill := user{"Bill", "bill@email.com"}
+					```
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					### Listing 5.22
+					#### What Go is doing underneath the code
+					```
+					(&bill).notify()
+					```
+					[コンパイラによるレシーバの暗黙的変換](https://skatsuta.github.io/2015/12/29/value-receiver-pointer-receiver/)
+				</script>
+			</section>
+
+			<section data-markdown>
+				<script type="text/template">
+					## 5.3 The nature of types
 				</script>
 			</section>
 
 			<section data-markdown>
 				<script type="text/template">
 					### 5.3.1 Built-in types
-					標準ライブラリから関数を見ていく
 				</script>
 			</section>
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/strings/strings.go
+					### Listing 5.23
+					#### golang.org/src/strings/strings.go: lines 620–625
 					```
 					func Trim(s string, cutset string) string {
 						if s == "" || cutset == "" {
@@ -228,7 +382,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/os/env.go
+					### Listing 5.24
+					#### golang.org/src/os/env.go: lines 38–44
 					```
 					func isShellSpecialVar(c uint8) bool {
 						switch c {
@@ -255,7 +410,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/net/ip.go
+					### Listing 5.25
+					#### golang.org/src/net/ip.go: line 32
 					```
 					type IP []byte
 					```
@@ -265,7 +421,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/net/ip.go
+					### Listing 5.26
+					#### golang.org/src/net/ip.go: lines 329–337
 					```
 					func (ip IP) MarshalText() ([]byte, error) {
 						if len(ip) == 0 {
@@ -283,7 +440,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/net/ip.go
+					### Listing 5.27
+					#### golang.org/src/net/ip.go: lines 318–325
 					```
 					func ipEmptyString(ip IP) string {
 						if len(ip) == 0 {
@@ -304,7 +462,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/time/time.go
+					### Listing 5.28
+					#### golang.org/src/time/time.go: lines 39–55
 					```
 					type Time struct {
 						// sec gives the number of seconds elapsed since
@@ -329,7 +488,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/time/time.go
+					### Listing 5.29
+					#### golang.org/src/time/time.go: lines 781–784
 					```
 					func Now() Time {
 						sec, nsec := now()
@@ -341,7 +501,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/time/time.go
+					### Listing 5.30
+					#### golang.org/src/time/time.go: lines 610–622
 					```
 					func (t Time) Add(d Duration) Time {
 						t.sec += int64(d / 1e9)
@@ -362,7 +523,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/os/file_unix.go
+					### Listing 5.31
+					#### golang.org/src/os/file_unix.go: lines 15–29
 					```
 					// File represents an open file descriptor.
 					type File struct {
@@ -385,7 +547,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/os/file.go
+					### Listing 5.32
+					#### golang.org/src/os/file.go: lines 238–240
 					```
 					func Open(name string) (*File, error) {
 						return OpenFile(name, O_RDONLY, 0)
@@ -396,7 +559,8 @@
 
 			<section data-markdown>
 				<script type="text/template">
-					### golang.org/src/os/file.go
+					### Listing 5.33
+					#### golang.org/src/os/file.go: lines 224–232
 					```
 					func (f *File) Chdir() error {
 						if f == nil {
