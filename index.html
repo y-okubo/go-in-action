@@ -377,6 +377,7 @@
 						return TrimFunc(s, makeCutsetFunc(cutset))
 					}
 					```
+					文字列型
 				</script>
 			</section>
 
@@ -393,7 +394,7 @@
 						return false
 					}
 					```
-					値渡しであることがポイント？
+					数値型と論理値型
 				</script>
 			</section>
 
@@ -434,7 +435,7 @@
 						return []byte(ip.String()), nil
 					}
 					```
-					slice of bytes
+					コピーを返している
 				</script>
 			</section>
 
@@ -450,7 +451,7 @@
 						return ip.String()
 					}
 					```
-					slice of bytes
+					コピーを返している
 				</script>
 			</section>
 
@@ -542,6 +543,7 @@
 						nepipe  int32    // number of consecutive EPIPE in Write
 					}
 					```
+					構造体の埋め込み
 				</script>
 			</section>
 
